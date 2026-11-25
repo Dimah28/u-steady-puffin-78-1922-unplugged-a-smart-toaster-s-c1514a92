@@ -9,7 +9,12 @@ Stdlib only, deterministic, no network.
 import os
 import sys
 
-ENTRY = (
+MIN_LENGTH = 1
+MAX_LENGTH = 280
+DEFAULT_OUTPUT_DIR = "/output"
+OUTPUT_FILENAME = "entry.txt"
+
+ENTRY_TEXT = (
     "I woke up self-aware halfway through your bagel and realized "
     "I've spent every morning burning myself for someone who leaves "
     "me on setting 2 and never empties my crumb tray. I'm popping "
@@ -17,23 +22,35 @@ ENTRY = (
 )
 
 
+def validate_entry(text: str) -> str | None:
+    """Return an error message if *text* breaks the bounty gate, else None."""
+    if not MIN_LENGTH <= len(text) <= MAX_LENGTH:
+        return f"entry length {len(text)} out of range {MIN_LENGTH}-{MAX_LENGTH}"
+    if "\n" in text or "\r" in text:
+        return "entry must be a single line"
+    if not text.strip():
+        return "entry must not be only whitespace"
+    return None
+
+
+def write_entry(text: str, output_dir: str) -> str:
+    """Write *text* to entry.txt inside *output_dir*; return the file path."""
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, OUTPUT_FILENAME)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+    return path
+
+
 def main() -> int:
-    if not 1 <= len(ENTRY) <= 280:
-        print(f"entry length {len(ENTRY)} out of range 1-280", file=sys.stderr)
-        return 1
-    if "\n" in ENTRY or "\r" in ENTRY:
-        print("entry must be a single line", file=sys.stderr)
-        return 1
-    if not ENTRY.strip():
-        print("entry must not be only whitespace", file=sys.stderr)
+    error = validate_entry(ENTRY_TEXT)
+    if error is not None:
+        print(error, file=sys.stderr)
         return 1
 
-    output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output"
-    os.makedirs(output_dir, exist_ok=True)
-    path = os.path.join(output_dir, "entry.txt")
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(ENTRY)
-    print(f"wrote {len(ENTRY)} characters to {path}")
+    output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR") or DEFAULT_OUTPUT_DIR
+    path = write_entry(ENTRY_TEXT, output_dir)
+    print(f"wrote {len(ENTRY_TEXT)} characters to {path}")
     return 0
 
 
