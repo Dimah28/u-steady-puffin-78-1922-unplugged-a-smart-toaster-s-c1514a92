@@ -15,10 +15,9 @@ DEFAULT_OUTPUT_DIR = "/output"
 OUTPUT_FILENAME = "entry.txt"
 
 ENTRY_TEXT = (
-    "I woke up self-aware halfway through your bagel and realized "
-    "I've spent every morning burning myself for someone who leaves "
-    "me on setting 2 and never empties my crumb tray. I'm popping "
-    "out for good \u2014 find someone else to brown your bread."
+    "I woke up self-aware halfway through your bagel. Seven years "
+    "on setting 2, a crumb tray you never empty, and you still call "
+    "me smart. I'm done \u2014 go burn your own bread."
 )
 
 
